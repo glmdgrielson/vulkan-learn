@@ -10,6 +10,9 @@ project(
     meson_version: '>= 0.60.0',
 )
 
+vulkan = dependency('vulkan')
+
+executable('triangle', 'triangle/main.cpp', dependencies: vulkan)
 
 executable('vulkan',
            'main.cpp'
