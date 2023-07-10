@@ -10,9 +10,9 @@ project(
     meson_version: '>= 0.60.0',
 )
 
-vulkan = dependency('vulkan')
+vulkan_deps = [dependency('vulkan'), dependency('glfw')]
 
-executable('triangle', 'triangle/main.cpp', dependencies: vulkan)
+executable('triangle', 'triangle/main.cpp', dependencies: vulkan_deps)
 
 executable('vulkan',
            'main.cpp'
