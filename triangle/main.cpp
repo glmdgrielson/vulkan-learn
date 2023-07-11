@@ -73,6 +73,8 @@ private:
     }
 
     void cleanup() {
+        vkDestroyInstance(this->instance, nullptr);
+
         glfwDestroyWindow(this->window);
 
         glfwTerminate();
