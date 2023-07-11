@@ -1,0 +1,6 @@
+# Ignore meson detritus
+build/*
+
+# KDevelop stuff
+.kdev4/*
+*.kdev4
