@@ -1,10 +1,14 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <vulkan/vk_enum_string_helper.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <stdexcept>
 #include <cstdint>
+#include <vector>
+#include <cstring>
 
 class HelloTriangle {
 public:
@@ -20,6 +24,16 @@ private:
     const uint32_t HEIGHT = 800;
     const uint32_t WIDTH = 600;
 
+    const std::vector<const char *> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"
+    };
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
+
     void initWindow() {
         // Initialize the graphics library?
         glfwInit();
@@ -34,18 +48,22 @@ private:
     VkInstance instance;
 
     void initVulkan() {
-        //
+        this->createInstance();
     }
 
     void createInstance() {
+        if (this->enableValidationLayers && !this->checkValidationLayerSupport()) {
+            throw std::runtime_error("Validation layers not loaded, oops.");
+        }
+
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName = "Hello Triangle";
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "No Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_VERSION_1_0;
-        appInfo.pNext = nullptr; // Leaving this empty for now.
+        appInfo.apiVersion = VK_API_VERSION_1_0;
+        // appInfo.pNext = nullptr; // Leaving this empty for now.
 
         VkInstanceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -54,6 +72,9 @@ private:
         // We don't want extensions at the moment.
         uint32_t glfwExtensionC = 0;
         const char** glfwExtensionV = glfwGetRequiredInstanceExtensions(&glfwExtensionC);
+        if (glfwExtensionV == nullptr) {
+            throw std::runtime_error("Extensions are not loaded!");
+        }
         createInfo.enabledExtensionCount = glfwExtensionC;
         createInfo.ppEnabledExtensionNames = glfwExtensionV;
 
@@ -62,8 +83,35 @@ private:
         VkResult result = vkCreateInstance(&createInfo, nullptr, &this->instance);
 
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("Failed to create instance.");
+            char err_msg[50];
+            sprintf(err_msg, "Failed to create instance: %s", string_VkResult(result));
+            throw std::runtime_error(err_msg);
         }
+    }
+
+    bool checkValidationLayerSupport() {
+        uint32_t layerCount;
+        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+        std::vector<VkLayerProperties> availableLayers(layerCount);
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+        for (const char* layerName: this->validationLayers) {
+            bool layerFound = false;
+
+            for (const auto &layerProperties : availableLayers) {
+                if (strcmp(layerName, layerProperties.layerName) == 0) {
+                    layerFound = true;
+                    break;
+                }
+            }
+
+            if (!layerFound) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     void mainLoop() {
