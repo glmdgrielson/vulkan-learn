@@ -78,12 +78,12 @@ private:
         createInfo.enabledExtensionCount = glfwExtensionC;
         createInfo.ppEnabledExtensionNames = glfwExtensionV;
 
-	if (this->enableValidationLayers) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
-		createInfo.ppEnabledLayerNames = this->validationLayers.data();
-	} else {
-		createInfo.enabledLayerCount = 0;
-	}
+        if (this->enableValidationLayers) {
+            createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
+            createInfo.ppEnabledLayerNames = this->validationLayers.data();
+        } else {
+            createInfo.enabledLayerCount = 0;
+        }
 
         VkResult result = vkCreateInstance(&createInfo, nullptr, &this->instance);
 
