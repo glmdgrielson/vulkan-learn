@@ -4,3 +4,6 @@ build/*
 # KDevelop stuff
 .kdev4/*
 *.kdev4
+
+# Ignore the CCLS stuff
+.ccls-cache/*
