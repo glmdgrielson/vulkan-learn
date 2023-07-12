@@ -1,3 +1,4 @@
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -49,6 +50,7 @@ private:
 
     void initVulkan() {
         this->createInstance();
+        this->pickPhysicalDevice();
     }
 
     void createInstance() {
@@ -91,6 +93,17 @@ private:
             char err_msg[50];
             sprintf(err_msg, "Failed to create instance: %s", string_VkResult(result));
             throw std::runtime_error(err_msg);
+        }
+    }
+
+    void pickPhysicalDevice() {
+        VkPhysicalDevice device = VK_NULL_HANDLE;
+        uint32_t deviceCount = 0;
+        vkEnumeratePhysicalDevices(this->instance, &deviceCount, nullptr);
+
+        if (deviceCount == 0) {
+            // No devices have been found. Uh oh.
+            throw std::runtime_error("No suitable device found! Update your dang drivers!");
         }
     }
 
