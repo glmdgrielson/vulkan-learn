@@ -1,3 +1,6 @@
+// Informative #includes. I hope.
+#include <vulkan/vk_platform.h>
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -9,6 +12,20 @@
 #include <cstdint>
 #include <vector>
 #include <cstring>
+#include <cstdio>
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* pUserData
+) {
+    // Yes, I know C++ supposedly has a prettier version. I don't care,
+    // I prefer this way. Fight me.
+    fprintf(stderr, "Validation layer: %s\n", pCallbackData->pMessage);
+
+    return VK_FALSE;
+}
 
 class HelloTriangle {
 public:
