@@ -50,7 +50,8 @@ VkResult CreateDebugUtilsMessengerEXT(
     const VkAllocationCallbacks* pAllocator,
     VkDebugUtilsMessengerEXT* pDebugMessenger
 ) {
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+        instance, "vkCreateDebugUtilsMessengerEXT");
 
     if (func != nullptr) {
       return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
@@ -62,7 +63,7 @@ VkResult CreateDebugUtilsMessengerEXT(
 void DestroyDebugUtilsMessengerEXT(VkInstance instance,
                                    VkDebugUtilsMessengerEXT messenger,
                                    const VkAllocationCallbacks *pAllocator) {
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
         instance, "vkDestroyDebugUtilsMessengerEXT");
 
     if (func != nullptr) {
