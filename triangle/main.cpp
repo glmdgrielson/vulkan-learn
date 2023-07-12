@@ -22,7 +22,24 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 ) {
     // Yes, I know C++ supposedly has a prettier version. I don't care,
     // I prefer this way. Fight me.
-    fprintf(stderr, "Validation layer: %s\n", pCallbackData->pMessage);
+    switch (messageSeverity) {
+
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+#ifdef VERBOSE
+        fprintf(stderr, "Validation layer (verbose): %s\n", pCallbackData->pMessage);
+#endif
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+#ifndef NDEBUG
+        fprintf(stderr, "Validation layer (info): %s\n", pCallbackData->pMessage);
+#endif
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        fprintf(stderr, "Validation layer (warning): %s\n", pCallbackData->pMessage);
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        fprintf(stderr, "Validation layer (error): %s\n", pCallbackData->pMessage);
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+      // A dummy value.
+      break;
+    }
 
     return VK_FALSE;
 }
