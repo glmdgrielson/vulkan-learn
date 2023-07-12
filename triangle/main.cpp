@@ -59,6 +59,17 @@ VkResult CreateDebugUtilsMessengerEXT(
     }
 }
 
+void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+                                   VkDebugUtilsMessengerEXT messenger,
+                                   const VkAllocationCallbacks *pAllocator) {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+        instance, "vkDestroyDebugUtilsMessengerEXT");
+
+    if (func != nullptr) {
+        func(instance, messenger, pAllocator);
+    }
+}
+
 class HelloTriangle {
 public:
     void run() {
@@ -215,6 +226,10 @@ private:
     }
 
     void cleanup() {
+        if (this->enableValidationLayers) {
+            DestroyDebugUtilsMessengerEXT(this->instance, this->messenger, nullptr);
+        }
+
         vkDestroyInstance(this->instance, nullptr);
 
         glfwDestroyWindow(this->window);
