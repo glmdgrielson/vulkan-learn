@@ -113,12 +113,7 @@ private:
         this->setupDebugMessenger();
     }
 
-    void setupDebugMessenger() {
-        if (!this->enableValidationLayers) {
-            return;
-        }
-
-        VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+    void setupDebugUtilsMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
         createInfo.sType =
             VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         createInfo.messageSeverity =
@@ -130,6 +125,15 @@ private:
             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
         createInfo.pfnUserCallback = debugCallback;
+    }
+
+    void setupDebugMessenger() {
+        if (!this->enableValidationLayers) {
+            return;
+        }
+
+        VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+        this->setupDebugUtilsMessengerCreateInfo(createInfo);
 
         if (CreateDebugUtilsMessengerEXT(this->instance, &createInfo, nullptr,
                                          &this->messenger) != VK_SUCCESS) {
