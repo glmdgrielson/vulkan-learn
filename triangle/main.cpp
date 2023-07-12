@@ -182,9 +182,14 @@ private:
         createInfo.enabledExtensionCount = glfwExtensionC;
         createInfo.ppEnabledExtensionNames = glfwExtensionV;
 
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         if (this->enableValidationLayers) {
             createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
             createInfo.ppEnabledLayerNames = this->validationLayers.data();
+
+            this->setupDebugUtilsMessengerCreateInfo(debugCreateInfo);
+            createInfo.pNext =
+                (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
         } else {
             createInfo.enabledLayerCount = 0;
         }
