@@ -105,6 +105,25 @@ private:
             // No devices have been found. Uh oh.
             throw std::runtime_error("No suitable device found! Update your dang drivers!");
         }
+
+        std::vector<VkPhysicalDevice> devices(deviceCount);
+        vkEnumeratePhysicalDevices(this->instance, &deviceCount, devices.data());
+
+        for (const auto& maybeDevice : devices) {
+            if (this->isDeviceSuitable(maybeDevice)) {
+                device = maybeDevice;
+                break;
+            }
+        }
+
+        if (device == VK_NULL_HANDLE) {
+            throw std::runtime_error("Failed to find physical device");
+        }
+    }
+
+    bool isDeviceSuitable(VkPhysicalDevice device) {
+        // Put in a dummy value just for now.
+        return true;
     }
 
     bool checkValidationLayerSupport() {
