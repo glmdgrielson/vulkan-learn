@@ -51,6 +51,20 @@ private:
         this->createInstance();
     }
 
+    std::vector<const char*> getRequiredExtensions() {
+        uint32_t extensionsCount = 0;
+        const char** glfwExtensions;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionsCount);
+
+        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + extensionsCount);
+
+        if (this->enableValidationLayers) {
+            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        }
+
+        return extensions;
+    }
+
     void createInstance() {
         if (this->enableValidationLayers && !this->checkValidationLayerSupport()) {
             throw std::runtime_error("Validation layers not loaded, oops.");
