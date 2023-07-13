@@ -48,6 +48,7 @@ private:
     }
 
     VkInstance instance;
+    VkPhysicalDevice device = VK_NULL_HANDLE;
 
     void initVulkan() {
         this->createInstance();
@@ -98,7 +99,6 @@ private:
     }
 
     void pickPhysicalDevice() {
-        VkPhysicalDevice device = VK_NULL_HANDLE;
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(this->instance, &deviceCount, nullptr);
 
@@ -110,9 +110,9 @@ private:
         std::vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(this->instance, &deviceCount, devices.data());
 
-        for (const auto& maybeDevice : devices) {
-            if (this->isDeviceSuitable(maybeDevice)) {
-                device = maybeDevice;
+        for (const auto& device : devices) {
+            if (this->isDeviceSuitable(device)) {
+                this->device = device;
                 break;
             }
         }
