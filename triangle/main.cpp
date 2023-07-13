@@ -103,7 +103,11 @@ private:
         }
     }
 
-    void createSurface() {}
+    void createSurface() {
+        if (glfwCreateWindowSurface(this->instance, this->window, nullptr, &this->surface) != VK_SUCCESS) {
+            throw std::runtime_error("Surface was not created!");
+        }
+    }
 
     void pickPhysicalDevice() {
         uint32_t deviceCount = 0;
@@ -236,6 +240,8 @@ private:
 
     void cleanup() {
         vkDestroyDevice(this->device, nullptr);
+
+        vkDestroySurfaceKHR(this->instance, this->surface, nullptr);
 
         vkDestroyInstance(this->instance, nullptr);
 
