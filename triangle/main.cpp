@@ -234,7 +234,9 @@ private:
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.pEnabledFeatures = &features;
 
-        createInfo.enabledExtensionCount = 0;
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
         if (this->enableValidationLayers) {
             // Technically these shouldn't be used, buuuuuuuuut...
             createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
