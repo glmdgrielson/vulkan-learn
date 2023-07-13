@@ -50,9 +50,12 @@ private:
     VkInstance instance;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device;
+    VkQueue graphicsQueue;
+    VkSurfaceKHR surface;
 
     void initVulkan() {
         this->createInstance();
+        this->createSurface();
         this->pickPhysicalDevice();
         this->createLogicalDevice();
     }
@@ -99,6 +102,8 @@ private:
             throw std::runtime_error(err_msg);
         }
     }
+
+    void createSurface() {}
 
     void pickPhysicalDevice() {
         uint32_t deviceCount = 0;
@@ -194,6 +199,8 @@ private:
         if (vkCreateDevice(this->physicalDevice, &createInfo, nullptr, &this->device) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create logical device!");
         }
+
+        vkGetDeviceQueue(this->device, indices.graphicsFamily.value(), 0, &this->graphicsQueue);
     }
 
     bool checkValidationLayerSupport() {
