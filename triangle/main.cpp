@@ -135,9 +135,10 @@ private:
 
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
 
         bool isComplete() {
-            return this->graphicsFamily.has_value();
+            return this->graphicsFamily.has_value() && this->presentFamily.has_value();
         }
     };
 
@@ -154,6 +155,13 @@ private:
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
+            }
+
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(this->physicalDevice, i, surface, &presentSupport);
+
+            if (presentSupport) {
+                indices.presentFamily = i;
             }
 
             if (indices.isComplete()) {
