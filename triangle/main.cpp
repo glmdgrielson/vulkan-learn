@@ -48,11 +48,13 @@ private:
     }
 
     VkInstance instance;
-    VkPhysicalDevice device = VK_NULL_HANDLE;
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkDevice device;
 
     void initVulkan() {
         this->createInstance();
         this->pickPhysicalDevice();
+        this->createLogicalDevice();
     }
 
     void createInstance() {
@@ -112,12 +114,12 @@ private:
 
         for (const auto& device : devices) {
             if (this->isDeviceSuitable(device)) {
-                this->device = device;
+                this->physicalDevice = device;
                 break;
             }
         }
 
-        if (device == VK_NULL_HANDLE) {
+        if (this->physicalDevice == VK_NULL_HANDLE) {
             throw std::runtime_error("Failed to find physical device");
         }
     }
@@ -161,6 +163,39 @@ private:
         return indices.isComplete();
     }
 
+    void createLogicalDevice() {
+        QueueFamilyIndices indices = findQueueFamilies(this->physicalDevice);
+
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+        queueCreateInfo.queueCount = 1;
+        float queuePriority = 1.0f;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+
+        // Leaving this blank for right now.
+        VkPhysicalDeviceFeatures features{};
+
+        VkDeviceCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        createInfo.pQueueCreateInfos = &queueCreateInfo;
+        createInfo.queueCreateInfoCount = 1;
+        createInfo.pEnabledFeatures = &features;
+
+        createInfo.enabledExtensionCount = 0;
+        if (this->enableValidationLayers) {
+            // Technically these shouldn't be used, buuuuuuuuut...
+            createInfo.enabledLayerCount = static_cast<uint32_t>(this->validationLayers.size());
+            createInfo.ppEnabledLayerNames = this->validationLayers.data();
+        } else {
+            createInfo.enabledLayerCount = 0;
+        }
+
+        if (vkCreateDevice(this->physicalDevice, &createInfo, nullptr, &this->device) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create logical device!");
+        }
+    }
+
     bool checkValidationLayerSupport() {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -193,6 +228,8 @@ private:
     }
 
     void cleanup() {
+        vkDestroyDevice(this->device, nullptr);
+
         vkDestroyInstance(this->instance, nullptr);
 
         glfwDestroyWindow(this->window);
